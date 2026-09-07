@@ -125,4 +125,23 @@ Pythonには「PEP 8」と呼ばれる公式のコーディング規約があり
 
 ### 2026-09-07
 * **やったこと**:
+  * *モダンなPython環境構築（uv と仮想環境）*:
+    * システム全体のPython環境を汚さないために、最新のパッケージマネージャー uv を用いてプロジェクト単位の仮想環境を作成（uv venv）。
+    * PowerShellのセキュリティ制限（ExecutionPolicy）にブロックされた際、Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned で一時的に実行権限を付与し、仮想環境を有効化（.venv\Scripts\activate）。
+  * *外部API通信とセキュリティブロックの回避*:
+    * uv pip install requests で外部ライブラリを導入し、requests.get() によるAPI通信を実装。
+    * プログラムからの通信がサーバーに弾かれるエラー（ConnectionResetError 10054）に対し、ヘッダーに User-Agent（ブラウザからのアクセスを装う情報）を付与することでブロックを回避。
+  * *「黄金の3ステップ」の実装（API取得 → オブジェクト化 → フィルタリング）*:
+    * 1. データ取得: JSONPlaceholderからユーザー一覧の生データ（辞書のリスト）を取得。
+    * 2. オブジェクト化: User クラスを定義し、リスト内包表記を用いて [User(user["name"], user["company"]["name"]) for user in raw_users] のように、生の辞書をクラスのインスタンス（オブジェクト）に一括変換。
+    * 3. ビジネスロジック: 再度リスト内包表記を用い、[u for u in user_objects if "Group" in u.company_name] として特定の条件を満たすオブジェクトのみを抽出。
+* **気づき・他言語との違い**:
+  * *モダンなパッケージ管理*:Pythonにおける uv は、TypeScript界隈における pnpm や bun のような位置づけ。PEP 668（グローバル環境へのインストール制限）の保護機構が働いていることを実体験し、Pythonでも仮想環境（Node.jsの node_modules に相当）をプロジェクトごとに切るのが必須であることを学んだ。
+  * *オブジェクト指向の真価（辞書 vs クラス）*:
+    * 生のJSON（辞書）のままだと user["company"]["name"] のようにキーを文字列で指定し続ける必要があり、タイポによるバグが起きやすい。
+    * 一度クラスにマッピングしてしまえば、member.company_name のようにプロパティとして安全かつ直感的にアクセスできる。さらに introduce() のような振る舞い（メソッド）も持たせることができる。
+  * *バックエンド開発への直結*:今回実装した「生のレスポンス・DBの値をオブジェクトに変換し、加工して返す」という一連のフローは、Laravel（PHP）におけるORMのModel操作や、Next.js（TypeScript）におけるAPIレスポンスの型変換（DTO）と全く同じ概念。Pythonのリスト内包表記を使うことで、これらを極めて簡潔に記述できることが確認できた。
+
+### 2026-09-08
+* **やったこと**:
   * 
