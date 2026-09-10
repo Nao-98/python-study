@@ -1,3 +1,4 @@
+# 本来動かしたいAPI本体。現在は会社のセキュリティ制限で一時停止中（情シス回答待ち）
 from fastapi import FastAPI
 from pydantic import BaseModel
 
