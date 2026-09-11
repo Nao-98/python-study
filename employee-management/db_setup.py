@@ -1,5 +1,5 @@
 # DB練習場
-# サーバー起動を待つ間、裏側の「データベース操作（SQLite）」だけをオフライン環境で練習・構築しているファイル。
+# サーバー起動(FastAPIの使用)を待つ間、裏側の「データベース操作（SQLite）」だけをオフライン環境で練習・構築しているファイル。
 import sqlite3
 from dataclasses import dataclass
 
@@ -14,9 +14,7 @@ class Employee:
 conn = sqlite3.connect("company.db")
 cursor = conn.cursor()
 
-# =========================================================
-# ▼ 昨日書いた「テーブル作成とデータ登録」のコードを合体！
-# （すでに存在する場合はスキップされるため、何度実行しても安全です）
+# テーブル作成
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS employees (
     emp_id INTEGER PRIMARY KEY,
@@ -25,45 +23,129 @@ CREATE TABLE IF NOT EXISTS employees (
     email TEXT
 )
 """)
-
-cursor.execute("INSERT OR IGNORE INTO employees VALUES (1, 'テスト太郎', 'エンジニア', 'test1@example.com')")
-cursor.execute("INSERT OR IGNORE INTO employees VALUES (2, 'てすと次郎', 'エンジニア', 'test2@example.com')")
 conn.commit()
-# =========================================================
-
-# 課題1: データ取得（SELECT）
-cursor.execute("SELECT * FROM employees")
-results = cursor.fetchall()
-
-print("▼ 登録されている社員一覧")
-
-# 課題2: オブジェクトへのマッピング
-for row in results:
-    emp = Employee(row[0], row[1], row[2], row[3])
-    print(f"[{emp.emp_id}] {emp.name} ({emp.role}) - {emp.email}")
 
 # =========================================================
-# ▼ ここから追加：社員名での検索機能
+# ▼ 対話型（CLI）アプリのメインループ
 # =========================================================
-print("\n▼ 「太郎」を含む社員の検索結果")
+while True:
+    print("\n" + "="*30)
+    print("【社員管理システム】")
+    print("1: 社員一覧を見る")
+    print("2: 社員を検索する")
+    print("3: 新規社員を登録する (Create)")
+    print("4: 社員の役職を更新する (Update)")
+    print("5: 社員情報を削除する (Delete)")
+    print("9: 終了")
+    print("="*30)
+    
+    # ユーザーからの入力を受け取る
+    # .strip() で見えないスペースを自動削除する
+    choice = input("メニュー番号を入力してください: ").strip()
 
-# 検索したいキーワード
-search_keyword = "太郎"
+    # 実際にPythonが受け取った文字を画面に出して確認する
+    # print(f"→【デバッグ】受け取った文字: [{choice}]")
 
-# 課題6: 条件を指定して検索(フィルタリング)するSQLを書いてみましょう。
-# ヒント: 「WHERE カラム名 LIKE ?」を使います。名前カラムは name です。
-cursor.execute("SELECT * FROM employees WHERE name LIKE ?", (f"%{search_keyword}%",))
+    # in を使って、半角でも全角でも反応するようにする
+    if choice in ["9", "９"]:
+        print("システムを終了します。")
+        break
 
-search_results = cursor.fetchall()
+    elif choice in ["1", "１"]:
+        cursor.execute("SELECT * FROM employees")
+        results = cursor.fetchall()
+        print("\n▼ 登録されている社員一覧")
+        for row in results:
+            emp = Employee(row[0], row[1], row[2], row[3])
+            print(f"[{emp.emp_id}] {emp.name} ({emp.role}) - {emp.email}")
 
-if search_results:
-    for row in search_results:
-        # 課題7: 先ほどの一覧表示と全く同じように、生のデータ(row)をEmployeeオブジェクトにマッピングしてください。
-        emp = Employee(row[0], row[1], row[2], row[3])
+        # 人間が読むためのストッパー
+        input("\nEnterキーを押すとメニューに戻ります...")
+
+    elif choice in ["2", "２"]:
+        search_keyword = input("\n検索したい名前を入力してください: ")
+        # SQLインジェクション対策として、プリペアードステートメントを使用
+        # SQL文に値を直接埋め込まず、プレースホルダー(例:?)を使用して値をあとから設定する手法
+        # この手法により、ユーザー入力がSQL文として解釈されることを防ぐ
+        cursor.execute("SELECT * FROM employees WHERE name LIKE ?", (f"%{search_keyword}%",))
+        results = cursor.fetchall()
+        if results:
+            for row in results:
+                emp = Employee(row[0], row[1], row[2], row[3])
+                print(f"[{emp.emp_id}] {emp.name} ({emp.role}) - {emp.email}")
+        else:
+            print("該当する社員は見つかりませんでした。")
+
+    elif choice in ["3", "３"]:
+        print("\n▼ 新規社員の登録")
+        new_name = input("名前を入力してください: ")
+        new_role = input("役職を入力してください: ")
+        new_email = input("メールアドレスを入力してください: ")
+
+        # SQLiteでは、emp_idを指定しないと自動で「連番」を振ってくれる
+        # 指定するカラムを name, role, email の3つだけに絞るため、以下のように書く
+        # INSERT INTO テーブル名 (カラム1, カラム2, カラム3) VALUES (?, ?, ?)
+        cursor.execute("INSERT INTO employees(name, role, email) VALUES (?, ?, ?)", (new_name, new_role, new_email))
+
+        # 登録内容を確定してDBに保存する
+        conn.commit()
+        print(f"{new_name} さんの情報を登録しました！")
+
+        input("\nEnterキーを押すとメニューに戻ります...")
+
+    elif choice in ["4", "４"]:
+        print("\n▼ 社員情報の更新")
+    
+        # 誰を更新するかIDで指定する
+        target_id = input("更新したい社員のID番号を入力してください: ")
+
+        # データベースに該当のIDが存在するか確認する
+        # 値を流し込むための「空席」である ?（プレースホルダー）と =
+        cursor.execute("SELECT * FROM employees WHERE emp_id = ?", (target_id,))
+
+        # 検索結果から1件だけデータを取り出す
+        employee_data = cursor.fetchone()
+
+        if employee_data is None:
+            print(f"エラー: ID '{target_id}' の社員は存在しません。")
+            input("\nEnterキーを押すとメニューに戻ります...")
+            continue  # これより下の処理をキャンセルし、ループの最初(メニュー)に戻る
+
+        new_role = input("新しい役職を入力してください: ")
+
+        # 値を流し込むための「空席」である ?（プレースホルダー）と =
+        cursor.execute(("UPDATE employees SET role = ? WHERE emp_id = ?"), (new_role, target_id))
+
+        # 更新内容を確定してDBに保存する
+        conn.commit()
+        print(f"ID:{target_id} の役職を「{new_role}」に更新しました！")
         
-        print(f"[{emp.emp_id}] {emp.name} ({emp.role}) - {emp.email}")
-else:
-    print("該当する社員は見つかりませんでした。")
+        input("\nEnterキーを押すとメニューに戻ります...")
 
-# 接続を閉じる
+    elif choice in ["5", "５"]:
+        print("\n▼ 社員情報の削除")
+
+        target_id = input("削除したい社員のID番号を入力してください: ")
+
+        cursor.execute("SELECT * FROM employees WHERE emp_id = ?", (target_id,))
+        employee_data = cursor.fetchone()
+
+        if employee_data is None:
+            print(f"エラー: ID '{target_id}' の社員は存在しません。")
+            input("\nEnterキーを押すとメニューに戻ります...")
+            continue  # これより下の処理をキャンセルし、ループの最初(メニュー)に戻る
+
+        # 値を流し込むための「空席」である ?（プレースホルダー）と =
+        cursor.execute("DELETE FROM employees WHERE emp_id = ?", (target_id,))
+
+        # 削除内容を確定してDBに反映する
+        conn.commit()
+        print(f"ID:{target_id} の社員情報を削除しました！")
+
+        input("\nEnterキーを押すとメニューに戻ります...")
+
+    else:
+        print("正しい番号を入力してください。")
+
+# ループを抜けたら接続を閉じる
 conn.close()
