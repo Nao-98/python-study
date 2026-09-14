@@ -11,16 +11,17 @@ class Employee:
     email: str
 
 # DB接続
-conn = sqlite3.connect("company.db")
+# ファイル名を変更して新しいDBを作る
+conn = sqlite3.connect("company_v2.db")
 cursor = conn.cursor()
 
-# テーブル作成
+# emailカラムに「重複NG（一意）」の制約をつける
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS employees (
     emp_id INTEGER PRIMARY KEY,
     name TEXT,
     role TEXT,
-    email TEXT
+    email TEXT unique
 )
 """)
 conn.commit()
@@ -78,18 +79,33 @@ while True:
 
     elif choice in ["3", "３"]:
         print("\n▼ 新規社員の登録")
-        new_name = input("名前を入力してください: ")
-        new_role = input("役職を入力してください: ")
-        new_email = input("メールアドレスを入力してください: ")
+        # .strip() をつけておくことで「スペースだけの入力」も空文字として扱える
+        new_name = input("名前を入力してください: ").strip()
+        new_role = input("役職を入力してください: ").strip()
+        new_email = input("メールアドレスを入力してください: ").strip()
 
-        # SQLiteでは、emp_idを指定しないと自動で「連番」を振ってくれる
-        # 指定するカラムを name, role, email の3つだけに絞るため、以下のように書く
-        # INSERT INTO テーブル名 (カラム1, カラム2, カラム3) VALUES (?, ?, ?)
-        cursor.execute("INSERT INTO employees(name, role, email) VALUES (?, ?, ?)", (new_name, new_role, new_email))
+        # 名前、またはメールアドレスが空っぽだった場合はエラーにする
+        # 「Aが空文字」または「Bが空文字」という条件
+        # Pythonでは「空文字は False（偽）として扱う」という便利なルールがあるため、実務ではもっと短く if not new_name or not new_email: と書くことも多い
+        if new_name == "" or new_email == "":
+            print("エラー: 名前とメールアドレスは必須入力です！")
+            input("\nEnterキーを押すとメニューに戻ります...")
+            continue
 
-        # 登録内容を確定してDBに保存する
-        conn.commit()
-        print(f"{new_name} さんの情報を登録しました！")
+        # とりあえず登録(INSERT)を試して(try)みる
+        try:
+            # SQLiteでは、emp_idを指定しないと自動で「連番」を振ってくれる
+            # 指定するカラムを name, role, email の3つだけに絞るため、以下のように書く
+            # INSERT INTO テーブル名 (カラム1, カラム2, カラム3) VALUES (?, ?, ?)
+            cursor.execute("INSERT INTO employees(name, role, email) VALUES (?, ?, ?)", (new_name, new_role, new_email))
+
+            # 登録内容を確定してDBに保存する
+            conn.commit()
+            print(f"{new_name} さんの情報を登録しました！")
+
+        except sqlite3.IntegrityError:
+            #  もし「UNIQUE制約違反(重複)が起きたら、アプリを落とさずにここを実行する(例外をキャッチする)
+            print(f"エラー: メールアドレス '{new_email}' は既に登録されています。")
 
         input("\nEnterキーを押すとメニューに戻ります...")
 
