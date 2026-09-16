@@ -1,0 +1,5 @@
+TransactionID,Date,EmployeeID,Amount,Status
+O001,2026-09-16,E003,45000,Completed
+O002,2026-09-16,E004,,Completed
+O003,2026-09-16,E003,12000,Error
+O004,2026-09-16,E005,28000,Completed
