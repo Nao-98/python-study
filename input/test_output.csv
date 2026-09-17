@@ -1,0 +1,5 @@
+TransactionID,Date,EmployeeID,Name,Department,Amount,Status
+T001,2026-09-16,E001,山田 太郎,第一営業部,15000,Completed
+T002,2026-09-16,E002,鈴木 一郎,第二営業部,32000,Completed
+T003,2026-09-16,E001,山田 太郎,第一営業部,8000,Pending
+T004,2026-09-16,E002,鈴木 一郎,第二営業部,41000,Completed
