@@ -1,0 +1,8 @@
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_1.csv, データ=['佐藤花子', 'デザイナー', 'hanako.sato@example.com'], 原因=エラー: 'hanako.sato@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_1.csv, データ=['鈴木一郎', 'マネージャー', 'ichiro.suzuki@example.com'], 原因=エラー: 'ichiro.suzuki@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_2.csv, データ=['高橋良子', 'チーフデザイナー', 'yoshiko.takahashi@example.com'], 原因=エラー: 'yoshiko.takahashi@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_2.csv, データ=['山崎浩二', 'サブマネージャー', 'koji.yamazaki@example.com'], 原因=エラー: 'koji.yamazaki@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_3.csv, データ=['横浜みなと', '総務', 'minato.yokohama@example.com'], 原因=エラー: 'minato.yokohama@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_3.csv, データ=['本谷唯', '事務', 'yui.motoya@example.com'], 原因=エラー: 'yui.motoya@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_4_error.csv, データ=['エラー太郎', 'テスト', 'hanako.sato@example.com'], 原因=エラー: 'hanako.sato@example.com' は既に登録されています。]
+[2026-09-24 11:02:59] 登録失敗: ファイル=import_4_error.csv, データ=['無事とおる', 'テスト', 'tooru@example.com'], 原因=エラー: 'tooru@example.com' は既に登録されています。]
