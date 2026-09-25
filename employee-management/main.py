@@ -1,14 +1,33 @@
 # 表舞台のAPI受付窓口
+from fastapi import FastAPI, HTTPException, Security, status, Depends
+from fastapi.security import APIKeyHeader
 from models import EmployeeCreate, EmployeeUpdate
 from database import get_all_employees, add_employee, update_employee_role, remove_employee
-from fastapi import FastAPI
 
 # アプリの立ち上げ
 app = FastAPI()
 
+# 許可する合言葉(APIキー)
+VALID_API_KEY = "my-super-secret-key-2026"
+
+# クライアントが「X-API-Key」という名前で鍵を送ってくることを指定
+api_key_header = APIKeyHeader(name="X-API-Key")
+
+# 関所となる検証関数
+def verify_api_key(api_key: str = Security(api_key_header)):
+    if api_key != VALID_API_KEY:
+        # キーが間違っている場合は 401(Unauthorized) で返す
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="無効なAPIキーです。アクセス権限がありません。"
+        )
+    return api_key
+
 # 「社員一覧」を実際のDBから取得して返すAPI
 @app.get("/employees")
-def get_employees():
+def get_employees(api_key: str = Depends(verify_api_key)):
+    # 確認用
+    print("🚀🚀🚀最新のmain.pyが動いています🚀🚀🚀")
     # 裏方のdatabase.pyからデータを取ってくる関数を呼び出す
     return get_all_employees()
 
