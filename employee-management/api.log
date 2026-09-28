@@ -1,0 +1,14 @@
+[2026-09-28 11:04:15] GET /employees | Status: 401 | Time:  23.758888ms
+[2026-09-28 11:04:53] GET /employees | Status: 401 | Time:  2.486706ms
+[2026-09-28 11:05:01] GET /employees | Status: 200 | Time:  53.815842ms
+[2026-09-28 12:06:31] POST /employees | Status: 422 | Time:  131.054163ms
+[2026-09-28 15:50:59] POST /employees | Status: 401 | Time:  42.404652ms
+[2026-09-28 16:02:48] GET /employees | Status: 401 | Time:  61.976910ms
+[2026-09-28 16:03:25] GET /employees | Status: 200 | Time:  101.003408ms
+[2026-09-28 16:03:47] GET /employees | Status: 200 | Time:  36.544085ms
+[2026-09-28 16:04:06] GET /employees | Status: 200 | Time:  14.852524ms
+[2026-09-28 16:04:40] GET /employees | Status: 200 | Time:  55.307150ms
+[2026-09-28 16:11:50] GET /employees | Status: 401 | Time:  5.114317ms
+[2026-09-28 16:12:17] GET /employees | Status: 200 | Time:  33.694983ms
+[2026-09-28 16:12:32] GET /employees | Status: 200 | Time:  8.798838ms
+[2026-09-28 16:12:55] GET /employees | Status: 200 | Time:  6.825924ms
