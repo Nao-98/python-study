@@ -12,3 +12,16 @@
 [2026-09-28 16:12:17] GET /employees | Status: 200 | Time:  33.694983ms
 [2026-09-28 16:12:32] GET /employees | Status: 200 | Time:  8.798838ms
 [2026-09-28 16:12:55] GET /employees | Status: 200 | Time:  6.825924ms
+[2026-09-29 10:44:55] GET /employees | Status: 200 | Time:  220.741987ms
+[2026-09-29 10:45:30] GET /employees | Status: 200 | Time:  40.843010ms
+[2026-09-29 11:05:59] GET /employees | Status: 200 | Time:  57.532310ms
+[2026-09-29 11:13:17] GET /employees | Status: 401 | Time:  14.137506ms
+[2026-09-29 11:22:03] GET /employees | Status: 200 | Time:  36.623478ms
+[2026-09-29 11:22:35] GET /employees | Status: 200 | Time:  14.405489ms
+[2026-09-29 11:22:43] GET /employees | Status: 200 | Time:  7.803202ms
+[2026-09-29 11:22:50] GET /employees | Status: 200 | Time:  6.718874ms
+[2026-09-29 11:22:55] GET /employees | Status: 200 | Time:  8.211136ms
+[2026-09-29 11:23:01] GET /employees | Status: 200 | Time:  5.586624ms
+[2026-09-29 11:23:06] GET /employees | Status: 200 | Time:  13.733864ms
+[2026-09-29 11:23:11] GET /employees | Status: 200 | Time:  0.000000ms
+[2026-09-29 11:23:17] GET /employees | Status: 200 | Time:  7.996798ms

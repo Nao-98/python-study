@@ -6,6 +6,7 @@ import time  # 処理時間を計算するため
 from datetime import datetime  # 現在時刻を取得するため
 from models import EmployeeCreate, EmployeeUpdate
 from database import get_all_employees, add_employee, update_employee_role, remove_employee
+from typing import Optional, Literal
 
 # アプリの立ち上げ
 app = FastAPI(
@@ -57,6 +58,17 @@ def verify_api_key(api_key: str = Security(api_key_header)):
         )
     return api_key
 
+# プルダウンの選択肢(Enum)を定義
+# class RoleEnum(str, Enum):
+#     se = "エンジニア"
+#     designer = "デザイナー"
+#     chief_designer = "チーフデザイナー"
+#     manager = "マネージャー"
+#     sub_manager = "サブマネージャー"
+#     general_affairs = "総務"
+#     clerk = "事務"
+#     tester = "テスト"
+
 # 「社員一覧」を実際のDBから取得して返すAPI
 # 検索機能付きのGETメソッド
 @app.get(
@@ -66,21 +78,31 @@ def verify_api_key(api_key: str = Security(api_key_header)):
         description="登録されている社員の一覧を取得します。役職や名前での絞り込みが可能です。"
 )
 def get_employees(
-    role: Optional[str] = Query(None, description="役職で完全一致検索（例：エンジニア）"),
+    # ★変更: Literal の中に「許可する日本語の文字列」を直接書くだけ！
+    role: Optional[Literal[
+        "エンジニア", 
+        "デザイナー",  
+        "チーフデザイナー", 
+        "マネージャー", 
+        "サブマネージャー", 
+        "総務", 
+        "事務", 
+        "テスト"
+    ]] = Query(None, description="役職を選択"),
     name: Optional[str] = Query(None, description="名前で部分一致（例：荒）"),
     api_key: str = Depends(verify_api_key)
 ):
     # 確認用
-    print("🚀🚀🚀最新のmain.pyが動いています🚀🚀🚀")
+    print(f"🚀 受け取った検索条件: role={role}, name={name}")
 
-    # 裏方のdatabase.pyからデータを取ってくる関数を呼び出す
+    # 一旦 all_emps という箱に入れる
     all_emps = get_all_employees()
 
     # 検索条件が指定されていれば、リストを絞り込む
     result = all_emps
 
     if role:
-        # 役職が一致する人だけを残す
+        # roleで比較
         result = [emp for emp in result if emp["role"] == role]
         
     if name:
