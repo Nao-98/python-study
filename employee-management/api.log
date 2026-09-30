@@ -25,3 +25,8 @@
 [2026-09-29 11:23:06] GET /employees | Status: 200 | Time:  13.733864ms
 [2026-09-29 11:23:11] GET /employees | Status: 200 | Time:  0.000000ms
 [2026-09-29 11:23:17] GET /employees | Status: 200 | Time:  7.996798ms
+[2026-09-30 17:32:43] GET /employees | Status: 401 | Time:  22.770166ms
+[2026-09-30 17:33:42] GET /employees | Status: 200 | Time:  61.338902ms
+[2026-09-30 17:35:15] DELETE /employees/8 | Status: 200 | Time:  70.801497ms
+[2026-09-30 17:35:38] GET /employees | Status: 200 | Time:  17.462015ms
+[2026-09-30 17:40:12] GET /employees | Status: 200 | Time:  43.003798ms

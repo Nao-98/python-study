@@ -14,7 +14,7 @@ def get_all_employees():
     cursor = conn.cursor()
         
     # 実際のテーブルからデータを取得（※テーブル名や列名が違う場合は修正してください）
-    cursor.execute("SELECT emp_id, name, role, email FROM employees")
+    cursor.execute("SELECT emp_id, name, role, email, is_active FROM employees")
     rows = cursor.fetchall()
         
     # 接続を閉じる
@@ -63,7 +63,7 @@ def remove_employee(emp_id: int):
     cursor = conn.cursor()
     
     # 該当IDの社員を削除する
-    cursor.execute("DELETE FROM employees WHERE emp_id = ?", (emp_id,))
+    cursor.execute("UPDATE employees SET is_active = 0 WHERE emp_id = ?", (emp_id,))
     conn.commit()
     
     if cursor.rowcount == 0:
@@ -71,4 +71,4 @@ def remove_employee(emp_id: int):
         return {"message": f"エラー: ID '{emp_id}' の社員は見つかりませんでした。"}
     
     conn.close()
-    return {"message": f"ID:{emp_id} の社員情報を削除しました！"}
+    return {"message": f"ID:{emp_id} の社員情報を退職処理しました！"}

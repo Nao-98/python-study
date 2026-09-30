@@ -78,7 +78,7 @@ def verify_api_key(api_key: str = Security(api_key_header)):
         description="登録されている社員の一覧を取得します。役職や名前での絞り込みが可能です。"
 )
 def get_employees(
-    # ★変更: Literal の中に「許可する日本語の文字列」を直接書くだけ！
+    # Literal の中に「許可する日本語の文字列」を直接書くだけ！
     role: Optional[Literal[
         "エンジニア", 
         "デザイナー",  
@@ -98,11 +98,11 @@ def get_employees(
     # 一旦 all_emps という箱に入れる
     all_emps = get_all_employees()
 
-    # 検索条件が指定されていれば、リストを絞り込む
-    result = all_emps
+    # まず大前提として「在籍中（is_active が 1）の社員」だけに絞る
+    result = [emp for emp in all_emps if emp["is_active"] == 1]
 
+    # その後、指定された検索条件（役職や名前）でさらに絞り込む
     if role:
-        # roleで比較
         result = [emp for emp in result if emp["role"] == role]
         
     if name:
