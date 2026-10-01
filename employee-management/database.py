@@ -14,7 +14,7 @@ def get_all_employees():
     cursor = conn.cursor()
         
     # 実際のテーブルからデータを取得（※テーブル名や列名が違う場合は修正してください）
-    cursor.execute("SELECT emp_id, name, role, email, is_active FROM employees")
+    cursor.execute("SELECT emp_id, name, role, email, is_active, profile_image FROM employees")
     rows = cursor.fetchall()
         
     # 接続を閉じる
@@ -72,3 +72,12 @@ def remove_employee(emp_id: int):
     
     conn.close()
     return {"message": f"ID:{emp_id} の社員情報を退職処理しました！"}
+
+def update_profile_image(emp_id: int, image_path: str):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    # 該当する社員の profile_image カラムに、ファイルのパスを上書き保存する
+    cursor.execute("UPDATE employees SET profile_image = ? WHERE emp_id = ?", (image_path, emp_id))
+    conn.commit()
+    conn.close()

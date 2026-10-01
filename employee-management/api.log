@@ -30,3 +30,8 @@
 [2026-09-30 17:35:15] DELETE /employees/8 | Status: 200 | Time:  70.801497ms
 [2026-09-30 17:35:38] GET /employees | Status: 200 | Time:  17.462015ms
 [2026-09-30 17:40:12] GET /employees | Status: 200 | Time:  43.003798ms
+[2026-10-01 16:48:12] GET /favicon.ico | Status: 404 | Time:  118.820906ms
+[2026-10-01 17:18:54] POST /employees/1/image | Status: 401 | Time:  9.802580ms
+[2026-10-01 17:19:15] POST /employees/1/image | Status: 200 | Time:  10.810614ms
+[2026-10-01 17:33:18] POST /employees/1/image | Status: 200 | Time:  60.651779ms
+[2026-10-01 17:33:50] GET /employees | Status: 200 | Time:  14.911652ms

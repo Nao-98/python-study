@@ -1,11 +1,13 @@
 # 表舞台のAPI受付窓口
+import os
+import shutil
 from typing import Optional  # 条件が「空」でもOKにするため
-from fastapi import FastAPI, HTTPException, Security, status, Depends, Request, Query
+from fastapi import FastAPI, HTTPException, Security, status, Depends, Request, Query, File, UploadFile
 from fastapi.security import APIKeyHeader
 import time  # 処理時間を計算するため
 from datetime import datetime  # 現在時刻を取得するため
 from models import EmployeeCreate, EmployeeUpdate
-from database import get_all_employees, add_employee, update_employee_role, remove_employee
+from database import get_all_employees, add_employee, update_employee_role, remove_employee, update_profile_image
 from typing import Optional, Literal
 
 # アプリの立ち上げ
@@ -57,17 +59,6 @@ def verify_api_key(api_key: str = Security(api_key_header)):
             detail="無効なAPIキーです。アクセス権限がありません。"
         )
     return api_key
-
-# プルダウンの選択肢(Enum)を定義
-# class RoleEnum(str, Enum):
-#     se = "エンジニア"
-#     designer = "デザイナー"
-#     chief_designer = "チーフデザイナー"
-#     manager = "マネージャー"
-#     sub_manager = "サブマネージャー"
-#     general_affairs = "総務"
-#     clerk = "事務"
-#     tester = "テスト"
 
 # 「社員一覧」を実際のDBから取得して返すAPI
 # 検索機能付きのGETメソッド
@@ -155,3 +146,41 @@ def update_employee(emp_id: int, emp_update: EmployeeUpdate):  # ID, データ�
 def delete_employee(emp_id: int):  # ID を受け取る
     # 裏方のdatabase.pyからデータを取ってくる関数を呼び出す
     return remove_employee(emp_id)  # 裏方にそのまま渡す
+
+# 画像の保存先フォルダ名
+IMAGE_DIR = "images"
+
+@app.post(
+    "/employees/{emp_id}/image",
+    tags=["社員管理"],
+    summary="プロフィール画像のアップロード",
+    description="社員のプロフィール画像をアップロードしてサーバーに保存します。"
+)
+def upload_employee_image(
+    emp_id: int, 
+    file: UploadFile = File(...), 
+    api_key: str = Depends(verify_api_key)
+):
+    # 1. 元のファイル名から拡張子（.png や .jpg など）を取り出す
+    _, ext = os.path.splitext(file.filename)
+    
+    # 2. 保存するファイル名を「社員ID_profile.拡張子」の形にする（例: 1_profile.png）
+    save_file_name = f"{emp_id}_profile{ext}"
+    
+    # 3. 保存先のフルパスを作る（例: images/1_profile.png）
+    save_path = os.path.join(IMAGE_DIR, save_file_name)
+
+    # 4. アップロードされたファイルを、imagesフォルダに書き込んで保存する
+    try:
+        with open(save_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # DBに画像のパスを記録する
+        update_profile_image(emp_id, save_path)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"画像の保存に失敗しました: {e}")
+    finally:
+        file.file.close() # メモリの解放
+
+    return {"message": f"社員ID:{emp_id} のプロフィール画像（{save_file_name}）を保存しました！"}
