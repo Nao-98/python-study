@@ -150,6 +150,10 @@ def delete_employee(emp_id: int):  # ID を受け取る
 # 画像の保存先フォルダ名
 IMAGE_DIR = "images"
 
+# 許可する画像のMIMEタイプ（ファイル形式）と、最大サイズ（5MB）を定義
+ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"]
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB (5 × 1024KB × 1024Bytes)
+
 @app.post(
     "/employees/{emp_id}/image",
     tags=["社員管理"],
@@ -161,6 +165,23 @@ def upload_employee_image(
     file: UploadFile = File(...), 
     api_key: str = Depends(verify_api_key)
 ):
+
+    # バリデーション（ファイル形式のチェック）
+    if file.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=400, 
+            detail="エラー: JPEG, PNG, WebP形式の画像のみアップロード可能です。"
+        )
+
+    # バリデーション（ファイルサイズのチェック）
+    # file.size はバイト単位でサイズを取得します
+    if file.size and file.size > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400, 
+            detail="エラー: ファイルサイズは5MB以下にしてください。"
+        )
+    
+    # 保存処理
     # 1. 元のファイル名から拡張子（.png や .jpg など）を取り出す
     _, ext = os.path.splitext(file.filename)
     

@@ -35,3 +35,5 @@
 [2026-10-01 17:19:15] POST /employees/1/image | Status: 200 | Time:  10.810614ms
 [2026-10-01 17:33:18] POST /employees/1/image | Status: 200 | Time:  60.651779ms
 [2026-10-01 17:33:50] GET /employees | Status: 200 | Time:  14.911652ms
+[2026-10-02 17:24:50] POST /employees/2/image | Status: 400 | Time:  40.745974ms
+[2026-10-02 17:29:23] POST /employees/2/image | Status: 400 | Time:  206.432104ms
